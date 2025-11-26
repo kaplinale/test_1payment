@@ -1,0 +1,19 @@
+# reload nginx configuration
+- name: reload nginx
+  debug: msg="checking nginx config first"
+  changed_when: True
+  notify:
+    - check nginx configuration
+    - reload nginx - after config check
+
+- name: check nginx configuration
+  command: "nginx -t"
+  register: result
+  changed_when: "result.rc != 0"
+  check_mode: no
+
+- name: reload nginx - after config check
+  service:
+    name: nginx
+    state: reloaded
+    enabled: yes

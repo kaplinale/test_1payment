@@ -1,0 +1,34 @@
+# open incoming 80 and 443 ports on RHEL-based OS 
+- block:
+
+  - name: Enable incoming tcp/80 
+    ansible.posix.firewalld:
+      port: 80/tcp
+      permanent: true
+      state: enabled
+
+  - name: Enable incoming tcp/443
+    ansible.posix.firewalld:
+      port: 443/tcp
+      permanent: true
+      state: enabled
+
+  when: ansible_os_family == "RedHat"
+
+# open incoming 80 and 443 ports on Debian-based OS
+- block:
+
+    - name: Enable incoming tcp/80
+      ufw:
+        rule: allow
+        port: '80'
+        proto: tcp
+    
+    - name: Enable incoming tcp/443
+      ufw:
+        rule: allow
+        port: '443'
+        proto: tcp
+
+  ignore_errors: true
+  when: ansible_os_family == "Debian" 

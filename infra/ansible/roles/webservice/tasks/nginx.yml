@@ -1,0 +1,60 @@
+# install nginx package if not exist
+- name: Nginx | Install
+  package:
+    name: nginx
+    state: present
+
+# depended vars
+- name: Nginx | Include OS dependent vars
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "../vars/{{ ansible_os_family }}-{{ ansible_distribution_major_version }}" 
+    - "../vars/{{ ansible_os_family }}.yml"
+    - "../vars/empty.yml"
+
+# the following three tasks needs to ensure log files exists because it can cause an error while nginx reloads in some cases
+- name: Nginx | Create a directory if it does not exist
+  ansible.builtin.file:
+    path: "{{ nginx_log_path }}"
+    state: directory
+    mode: '0755'
+
+- name: Nginx | ensure error log file exists
+  copy:
+    content: ""
+    dest: "{{ nginx_log_path }}/error.log"
+    force: false
+    group: root
+    owner: root
+    mode: 0644
+
+- name: Nginx | ensure access log file exists
+  copy:
+    content: ""
+    dest: "{{ nginx_log_path }}/error.log"
+    force: false
+    group: root
+    owner: root
+    mode: 0644
+
+# copy nginx and health location configs and reload it
+- block:
+  
+  - name: Nginx | Copy main nginx config
+    template:
+      src: nginx.conf.j2
+      dest: "/etc/nginx/nginx.conf"
+      owner: root
+      group: root
+      mode: 0644
+  - name: Nginx | Copy health location config
+    template:
+      src: health.conf.j2
+      dest: "/etc/nginx/conf.d/health.conf"
+      owner: root
+      group: root
+      mode: 0644
+
+  notify: reload nginx
+
+# 

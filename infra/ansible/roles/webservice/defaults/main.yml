@@ -1,0 +1,16 @@
+nginx_user: nginx
+nginx_group: "{{nginx_user}}"
+
+nginx_server_tokens: "off"
+nginx_worker_connections: 1024
+nginx_gzip_on: true
+
+nginx_keepalive_timeout: 65
+
+nginx_enable_php_status_page: true
+nginx_enable_graylog: false
+
+nginx_log_path: "/var/log/nginx/service2"
+
+# set to "yes" if you have UFW module installed, otherwise - "no" and open 80/443 ports manually on Debian-hosts
+ufw_module_installed: "no"

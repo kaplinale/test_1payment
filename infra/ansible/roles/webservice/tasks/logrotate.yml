@@ -1,0 +1,15 @@
+# install logrotate package if not exist
+- name: LogRotate | Install
+  package:
+    name: logrotate
+    state: present
+
+# copy nginx config and reload it
+- name: LogRotate | Configure logrotate
+  template:
+    src: nginx.j2
+    dest: "/etc/logrotate.d/nginx"
+    owner: root
+    group: root
+    mode: 0644
+  notify: reload nginx
